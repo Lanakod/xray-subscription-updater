@@ -1,0 +1,5 @@
+xray-data/
+.idea/
+*.log
+.env
+.DS_Store

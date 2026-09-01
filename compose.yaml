@@ -1,0 +1,19 @@
+name: auto-xray
+services:
+  xray:
+    image: ghcr.io/lanakod/xray-subscription-updater:latest
+    container_name: xray-subscription
+    restart: unless-stopped
+    environment:
+      SUBSCRIPTION_URL: "https://example.com/sub/a1b2c3d4"
+      UPDATE_INTERVAL: "3600"
+      DOWNLOAD_TIMEOUT: "30"
+      TZ: "Europe/Moscow"
+    ports:
+      # Change these ports if you use different proxy ports.
+      # Make sure the corresponding inbounds in your Xray subscription
+      # listen on 0.0.0.0 or the required interface address, not 127.0.0.1.
+      - "1080:1080"
+      - "1081:1081"
+    volumes:
+      - ./xray-data:/etc/xray
