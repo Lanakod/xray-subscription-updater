@@ -6,6 +6,9 @@ services:
     restart: unless-stopped
     environment:
       SUBSCRIPTION_URL: "https://example.com/sub/a1b2c3d4"
+      # Remnawave device identification
+      DEVICE_NAME: "media-server"
+      DEVICE_ID: "0123456789abcdef0123456789abcdef"
       UPDATE_INTERVAL: "3600"
       DOWNLOAD_TIMEOUT: "30"
       TZ: "Europe/Moscow"

@@ -7,6 +7,24 @@ UPDATE_INTERVAL="${UPDATE_INTERVAL:-3600}"
 CONFIG_PATH="${CONFIG_PATH:-/etc/xray/config.json}"
 DOWNLOAD_TIMEOUT="${DOWNLOAD_TIMEOUT:-30}"
 
+DEVICE_NAME="${DEVICE_NAME:-xray-subscription}"
+DEVICE_ID="${DEVICE_ID:-}"
+
+DEVICE_OS="Linux"
+DEVICE_OS_VERSION="unknown"
+
+if [ -r /etc/os-release ]; then
+    DEVICE_OS="$(
+        . /etc/os-release
+        printf '%s' "${NAME:-Linux}"
+    )"
+
+    DEVICE_OS_VERSION="$(
+        . /etc/os-release
+        printf '%s' "${VERSION_ID:-unknown}"
+    )"
+fi
+
 CONFIG_DIR="$(dirname "$CONFIG_PATH")"
 
 SUBSCRIPTION_FILE="${CONFIG_DIR}/subscription.txt"
@@ -35,6 +53,12 @@ if [ -z "$SUBSCRIPTION_URL" ]; then
     die "SUBSCRIPTION_URL is not set"
 fi
 
+if [ -z "$DEVICE_ID" ]; then
+    echo "ERROR: DEVICE_ID is not set."
+    echo "Generate one with: openssl rand -hex 16"
+    exit 1
+fi
+
 mkdir -p "$CONFIG_DIR"
 
 #
@@ -57,6 +81,10 @@ download_subscription() {
         --retry-delay 5 \
         --header "Accept: application/json" \
         --header "User-Agent: xray-subscription/1.0" \
+        --header "x-hwid: $DEVICE_ID" \
+        --header "x-device-model: $DEVICE_NAME" \
+        --header "x-device-os: $DEVICE_OS" \
+        --header "x-ver-os: $DEVICE_OS_VERSION" \
         "$SUBSCRIPTION_URL" \
         --output "$SUBSCRIPTION_FILE"; then
 
